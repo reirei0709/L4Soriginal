@@ -49,28 +49,6 @@ class GPS : AppCompatActivity(), LocationListener,OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_g_p_s)
 
-        val MainPage = Intent(application, MainActivity::class.java)
-
-        // Figure out what to do based on the intent type
-        if (intent?.type?.startsWith("image/") == true) {
-            // Handle intents with image data ...
-        } else if (intent?.type == "text/plain") {
-            // Handle intents with text ...
-            val infoText: String = intent.getStringExtra(Intent.EXTRA_TEXT)
-            val infoTextArr = infoText.split("\n")
-            // putExtra等々処理を入れる
-            MainPage.putExtra("Mode", "0")  // 他アプリから追加
-            MainPage.putExtra("shopname", infoTextArr[0])
-            MainPage.putExtra("memo", infoTextArr[1])
-            MainPage.putExtra("url", infoTextArr[2])
-
-            //お店の情報の登録画面を呼び出す(追加登録)
-            startActivity(MainPage)
-
-
-            startActivity(intent)
-        }
-
 
 
 
@@ -162,7 +140,7 @@ class GPS : AppCompatActivity(), LocationListener,OnMapReadyCallback {
                 memo.Lat, memo.Long
             )
 
-            map?.addMarker(MarkerOptions().position(place).title(memo.name))
+            map?.addMarker(MarkerOptions().position(place).title(memo.title))
 
         }
     }
@@ -286,9 +264,8 @@ class GPS : AppCompatActivity(), LocationListener,OnMapReadyCallback {
     fun save(
         Lat: Double,
         Long: Double,
-        name: String,
-        memo: String,
-        url:String
+        title: String,
+        detail: String
     ) {
         val memo: Memo? = read()
 
@@ -302,8 +279,8 @@ class GPS : AppCompatActivity(), LocationListener,OnMapReadyCallback {
             val newMemo: Memo = it.createObject(Memo::class.java)
              newMemo.Lat = Lat
             newMemo.Long = Long
-            newMemo.name = name
-            newMemo.url = url
+            newMemo.title = title
+            newMemo.detail = detail
             //}
             //Snackbar.make(container, "登録出来ました！！", Snackbar.LENGTH_SHORT).show()
 
