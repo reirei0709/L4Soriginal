@@ -31,33 +31,35 @@ class MainActivity() : AppCompatActivity(), Parcelable {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
         val memo: Memo? = read()
 
+        val intentMode: Int = intent.getStringExtra("Mode").toInt()
 
-
-        val intent = Intent(application, GPS::class.java)
-
-        // Figure out what to do based on the intent type
-        if (intent?.type?.startsWith("image/") == true) {
-            // Handle intents with image data ...
-        } else if (intent?.type == "text/plain") {
-            // Handle intents with text ...
-            val infoText: String = intent.getStringExtra(Intent.EXTRA_TEXT)
-            // putExtra等々処理を入れる
-            startActivity(intent)
-        }
-
-
+        titleEditText.setText(intent.getStringExtra("shopname"))
+        //editTextPostalAddress.setText(intent.getStringExtra("shopaddress"))
+        detail.setText(intent.getStringExtra("memo"))
+        url.setText(intent.getStringExtra("url"))
 
         saveButton.setOnClickListener {
 
+            intent.putExtra("shopname",titleEditText.text.toString())
+            intent.putExtra("memo",detail.text.toString())
+            intent.putExtra("url",url.text.toString())
 
-            val Lat = intent.getDoubleExtra("Latitude", 0.0)
-            val Long = intent.getDoubleExtra("Longitude", 0.0)
 
-            val title = titleEditText.text.toString()
-            val detail = detail.text.toString()
-            save(Lat, Long, title, detail)
+            val id:String? = intent.getStringExtra("ID")
+            val name: String  = titleEditText.text.toString()
+            val memo: String = detail.text.toString()
+            val url: String = detail.text.toString()
+
+
+//            val Lat = intent.getDoubleExtra("Latitude", 0.0)
+//            val Long = intent.getDoubleExtra("Longitude", 0.0)
+//
+//            val title = titleEditText.text.toString()
+//            val detail = detail.text.toString()
+            save(id,name,memo,url)
 
             Snackbar.make(container, "登録出来ました！！", Snackbar.LENGTH_SHORT).show()
 
@@ -76,12 +78,10 @@ class MainActivity() : AppCompatActivity(), Parcelable {
 
 
         if (memo != null) {
-            titleEditText.setText(memo.title)
-            detail.setText(memo.detail)
-
-
+            titleEditText.setText(memo.name)
+            //detail.setText(memo.memo)
+            url.setText(memo.url)
         }
-
 
     }
 
@@ -98,10 +98,14 @@ class MainActivity() : AppCompatActivity(), Parcelable {
     }
 
     fun save(
-        Lat: Double,
-        Long: Double,
-        title: String,
-        detail: String
+        id:String?,
+        name:String,
+        memo:String,
+        url:String
+//        Lat: Double,
+//        Long: Double,
+//        title: String,
+//        detail: String
     ) {
         val memo: Memo? = read()
 
@@ -113,10 +117,12 @@ class MainActivity() : AppCompatActivity(), Parcelable {
             //memo?.detail = detail
             //} else {
             val newMemo: Memo = it.createObject(Memo::class.java)
-            newMemo.Lat = Lat
-            newMemo.Long = Long
-            newMemo.title = title
-            newMemo.detail = detail
+//            newMemo.Lat = Lat
+//            newMemo.Long = Long
+            newMemo.id = id.toString()
+            newMemo.name = name
+            newMemo.memo = memo.toString()
+            newMemo.url = url
         }
         //Snackbar.make(container, "登録出来ました！！", Snackbar.LENGTH_SHORT).show()
 
