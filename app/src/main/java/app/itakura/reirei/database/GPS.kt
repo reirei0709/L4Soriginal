@@ -135,6 +135,35 @@ class GPS : AppCompatActivity(), LocationListener,OnMapReadyCallback {
 
         if (memo != null) {
 
+            // 現在地表示ボタンを有効にする
+            if (ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return
+            }
+            map?.isMyLocationEnabled = true
+
+            map?.setOnMapLongClickListener(GoogleMap.OnMapLongClickListener {
+                val id = intent.getStringExtra("id")
+
+                if (id != null) {
+                    delete(id)
+                }
+            })
+
+
             val place = LatLng(
                 memo.Lat, memo.Long
             )
@@ -266,6 +295,26 @@ class GPS : AppCompatActivity(), LocationListener,OnMapReadyCallback {
     override fun onDestroy() {
         super.onDestroy()
         realm.close()
+    }
+
+    fun delete(id: String) {
+        realm.executeTransaction {
+            val task = realm.where(Memo::class.java).equalTo("id", id).findFirst()
+                ?: return@executeTransaction
+            task.deleteFromRealm()
+        }
+    }
+
+    fun delete(task: Memo) {
+        realm.executeTransaction {
+            task.deleteFromRealm()
+        }
+    }
+
+    fun deleteAll() {
+        realm.executeTransaction {
+            realm.deleteAll()
+        }
     }
 
 
