@@ -19,7 +19,8 @@ import app.itakura.reirei.databaserealm.Memo
 import com.google.android.material.snackbar.Snackbar
 import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_main.*
-
+import java.util.*
+import java.util.jar.Attributes
 
 
 class MainActivity() : AppCompatActivity(), Parcelable {
@@ -34,10 +35,9 @@ class MainActivity() : AppCompatActivity(), Parcelable {
 
         val memo: Memo? = read()
 
-        val intentMode: Int = intent.getStringExtra("Mode").toInt()
+        val intentMode: Int? = intent.getStringExtra("Mode").toInt()
 
         titleEditText.setText(intent.getStringExtra("shopname"))
-        //editTextPostalAddress.setText(intent.getStringExtra("shopaddress"))
         detail.setText(intent.getStringExtra("memo"))
         url.setText(intent.getStringExtra("url"))
 
@@ -51,7 +51,7 @@ class MainActivity() : AppCompatActivity(), Parcelable {
             val id:String? = intent.getStringExtra("ID")
             val name: String  = titleEditText.text.toString()
             val memo: String = detail.text.toString()
-            val url: String = detail.text.toString()
+            val url: String = url.text.toString()
 
 
 //            val Lat = intent.getDoubleExtra("Latitude", 0.0)
@@ -59,14 +59,23 @@ class MainActivity() : AppCompatActivity(), Parcelable {
 //
 //            val title = titleEditText.text.toString()
 //            val detail = detail.text.toString()
-            save(id,name,memo,url)
+//            save(id,name,memo,url)
 
             Snackbar.make(container, "登録出来ました！！", Snackbar.LENGTH_SHORT).show()
 
-            val intent = Intent(application, GPS::class.java)
+            if (intentMode == 0 || intentMode == 1){
+                create(name,memo,url)
+            } else if (intentMode == 2){
+                update(id,name,memo,url)
+            }
 
+            // 画面を閉じる
+            finish()
 
-            startActivity(intent)
+//            val intent = Intent(application, GPS::class.java)
+//
+//
+//            startActivity(intent)
 
         }
 
@@ -77,11 +86,11 @@ class MainActivity() : AppCompatActivity(), Parcelable {
     }
 
 
-        if (memo != null) {
-            titleEditText.setText(memo.name)
-            //detail.setText(memo.memo)
-            url.setText(memo.url)
-        }
+//        if (memo != null) {
+//            titleEditText.setText(memo.name)
+//            detail.setText(memo.memo)
+//            url.setText(memo.url)
+//        }
 
     }
 
@@ -97,37 +106,57 @@ class MainActivity() : AppCompatActivity(), Parcelable {
 
     }
 
-    fun save(
-        id:String?,
-        name:String,
-        memo:String,
-        url:String
-//        Lat: Double,
-//        Long: Double,
-//        title: String,
-//        detail: String
-    ) {
-        val memo: Memo? = read()
-
+    fun create( title: String, memo:String, url : String) {
         realm.executeTransaction {
-            //if (memo != null) {
-            //memo?.Lat = Lat
-            // memo?.Long = Long
-            //memo?.title = title
-            //memo?.detail = detail
-            //} else {
-            val newMemo: Memo = it.createObject(Memo::class.java)
-//            newMemo.Lat = Lat
-//            newMemo.Long = Long
-            newMemo.id = id.toString()
-            newMemo.name = name
-            newMemo.memo = memo.toString()
-            newMemo.url = url
+            val memoData = it.createObject(Memo::class.java, UUID.randomUUID().toString())
+            memoData.name = title
+            memoData.memo = memo
+            memoData.url = url
         }
-        //Snackbar.make(container, "登録出来ました！！", Snackbar.LENGTH_SHORT).show()
-
-
     }
+
+    fun update(id: String?, title: String,memo:String, url : String) {
+        realm.executeTransaction {
+            val memoData = realm.where(Memo::class.java).equalTo("id", id).findFirst()
+                ?: return@executeTransaction
+            memoData.name = title
+            memoData.memo = memo
+            memoData.url = url
+
+        }
+    }
+
+//    fun save(
+//        id:String?,
+//        name:String,
+//        memo:String,
+//        url:String
+////        Lat: Double,
+////        Long: Double,
+////        title: String,
+////        detail: String
+//    ) {
+//        val memo: Memo? = read()
+//
+//        realm.executeTransaction {
+//            //if (memo != null) {
+//            //memo?.Lat = Lat
+//            // memo?.Long = Long
+//            //memo?.title = title
+//            //memo?.detail = detail
+//            //} else {
+//            val newMemo: Memo = it.createObject(Memo::class.java)
+////            newMemo.Lat = Lat
+////            newMemo.Long = Long
+//            newMemo.id = id.toString()
+//            newMemo.name = name
+//            newMemo.memo = memo.toString()
+//            newMemo.url = url
+//        }
+//        //Snackbar.make(container, "登録出来ました！！", Snackbar.LENGTH_SHORT).show()
+//
+//
+//    }
 
 
     private var m_uri: Uri? = null
@@ -136,19 +165,6 @@ class MainActivity() : AppCompatActivity(), Parcelable {
     constructor(parcel: Parcel) : this() {
         m_uri = parcel.readParcelable(Uri::class.java.classLoader)
     }
-
-
-//override fun onCreate(savedInstanceState: Bundle?) {
-//super.onCreate(savedInstanceState)
-//setContentView(R.layout.activity_main)
-// setViews()
-//}
-
-// private fun setViews() {
-// val button: Button = findViewById(R.id.buttonPanel) as Button
-//button.setOnClickListener(button_onClick)
-//}
-
 
 
     fun onClick(dialog: android.content.DialogInterface?, which: kotlin.Int) {

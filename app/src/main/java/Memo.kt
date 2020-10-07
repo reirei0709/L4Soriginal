@@ -2,9 +2,11 @@ package app.itakura.reirei.databaserealm
 
 import android.widget.ImageView
 import io.realm.RealmObject
+import io.realm.annotations.PrimaryKey
+import java.util.*
 
 open class Memo(
-    open var id: String = "",
+    @PrimaryKey open var id: String = UUID.randomUUID().toString(),
     open var name: String = "",
     open var memo:String = "",
     open var url: String = "",

@@ -9,7 +9,6 @@ import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -23,10 +22,7 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import io.realm.Realm
-import io.realm.RealmObject
-import io.realm.RealmResults
 import kotlinx.android.synthetic.main.activity_g_p_s.*
-import kotlinx.android.synthetic.main.activity_main.*
 
 
 class GPS : AppCompatActivity(), LocationListener,OnMapReadyCallback {
@@ -61,23 +57,29 @@ class GPS : AppCompatActivity(), LocationListener,OnMapReadyCallback {
             // putExtra等々処理を入れる
             MainPage.putExtra("Mode", "0")  // 他アプリから追加
             MainPage.putExtra("shopname", infoTextArr[0])
+            Log.d("shopname",infoTextArr[0])
             MainPage.putExtra("memo", infoTextArr[2])
+            Log.d("memo",infoTextArr[2])
             MainPage.putExtra("url", infoTextArr[3])
+            Log.d("url",infoTextArr[3])
+
+
+
+//            // 地点情報獲得
+//            val task = ObtainGeoSpotTask(
+//                applicationContext,
+//                object : OnObtainGeoSpotListener() {
+//                    fun onObtainGeoSpot(geoSpot: GeoSpot?) {}
+//                })
+//            task.execute(intent.getStringExtra(Intent.EXTRA_TEXT))
 
             //お店の情報の登録画面を呼び出す(追加登録)
             startActivity(MainPage)
 
-
-            startActivity(MainPage)
         }
 
 
 
-
-
-
-        //val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
-        //mapFragment.getMapAsync(this)
 
         if (ContextCompat.checkSelfPermission(
                 this,
@@ -105,39 +107,31 @@ class GPS : AppCompatActivity(), LocationListener,OnMapReadyCallback {
         }
         button.setOnClickListener {
 
-            //val yourspot = "Latitude" + mylocation.getLatitude()
-            //val yourspot1 = "Longitude" + mylocation.getLongitude()
-
-
 
 
             if (mylocation != null) {
-                val MainActivity = Intent(this, MainActivity::class.java)
+                val MainPage = Intent(this, MainActivity::class.java)
+//
+                MainPage.putExtra("Latitude", mylocation!!.getLatitude())
+                MainPage.putExtra("Longitude", mylocation!!.getLongitude())
 
-                MainActivity.putExtra("Latitude", mylocation!!.getLatitude())
-                MainActivity.putExtra("Longitude", mylocation!!.getLongitude())
 
-                //LatLng(
-                // location.getLatitude(),location.getLongitude()
-                //)
 
-                startActivity(MainActivity)
+                startActivity(MainPage)
             }
 
         }
 
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
-
     }
+
+
 
 
     override fun onMapReady(googleMap: GoogleMap?) {
         map = googleMap
         val memo: Memo? = read()
-
-
-
 
         if (memo != null) {
 
@@ -166,9 +160,6 @@ class GPS : AppCompatActivity(), LocationListener,OnMapReadyCallback {
 
         }
     }
-
-
-        //val tokyo = LatLng(35.689521, 139.691704)
 
 
         private fun locationStart() {
@@ -275,41 +266,6 @@ class GPS : AppCompatActivity(), LocationListener,OnMapReadyCallback {
     override fun onDestroy() {
         super.onDestroy()
         realm.close()
-    }
-
-
-
-
-
-
-
-    fun save(
-        Lat: Double,
-        Long: Double,
-        name: String,
-        memo: String,
-        url:String
-    ) {
-        val memo: Memo? = read()
-
-        realm.executeTransaction {
-            //if (memo != null) {
-            //memo?.Lat = Lat
-            //memo?.Long = Long
-            //memo?.title = title
-            //memo?.detail = detail
-            //} else {
-            val newMemo: Memo = it.createObject(Memo::class.java)
-             newMemo.Lat = Lat
-            newMemo.Long = Long
-            newMemo.name = name
-            newMemo.url = url
-            //}
-            //Snackbar.make(container, "登録出来ました！！", Snackbar.LENGTH_SHORT).show()
-
-
-        }
-
     }
 
 
