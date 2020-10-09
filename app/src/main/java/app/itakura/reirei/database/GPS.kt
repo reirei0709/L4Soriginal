@@ -45,6 +45,7 @@ class GPS : AppCompatActivity(), LocationListener,OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_g_p_s)
 
+
         val MainPage = Intent(application, MainActivity::class.java)
 
         // Figure out what to do based on the intent type
@@ -63,6 +64,8 @@ class GPS : AppCompatActivity(), LocationListener,OnMapReadyCallback {
             MainPage.putExtra("url", infoTextArr[3])
             Log.d("url",infoTextArr[3])
 
+            map?.isMyLocationEnabled = true
+
 
 
 //            // 地点情報獲得
@@ -77,7 +80,6 @@ class GPS : AppCompatActivity(), LocationListener,OnMapReadyCallback {
             startActivity(MainPage)
 
         }
-
 
 
 
@@ -102,12 +104,8 @@ class GPS : AppCompatActivity(), LocationListener,OnMapReadyCallback {
                     this
                 )
             }
-
-
         }
         button.setOnClickListener {
-
-
 
             if (mylocation != null) {
                 val MainPage = Intent(this, MainActivity::class.java)
@@ -115,12 +113,12 @@ class GPS : AppCompatActivity(), LocationListener,OnMapReadyCallback {
                 MainPage.putExtra("Latitude", mylocation!!.getLatitude())
                 MainPage.putExtra("Longitude", mylocation!!.getLongitude())
 
-
-
                 startActivity(MainPage)
             }
 
         }
+
+        map?.isMyLocationEnabled = true
 
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
@@ -147,22 +145,22 @@ class GPS : AppCompatActivity(), LocationListener,OnMapReadyCallback {
                 // TODO: Consider calling
                 //    ActivityCompat#requestPermissions
                 // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                // public void onRequestPermissionsResult(int requestCode, String[] permissions,
                 //                                          int[] grantResults)
                 // to handle the case where the user grants the permission. See the documentation
                 // for ActivityCompat#requestPermissions for more details.
                 return
             }
+
             map?.isMyLocationEnabled = true
 
-            map?.setOnMapLongClickListener(GoogleMap.OnMapLongClickListener {
-                val id = intent.getStringExtra("id")
-
-                if (id != null) {
-                    delete(id)
-                }
-            })
-
+//            map?.setOnMapLongClickListener(GoogleMap.OnMapLongClickListener {
+//                val id = intent.getStringExtra("id")
+//
+//                if (id != null) {
+//                    delete(id)
+//                }
+//            })
 
             val place = LatLng(
                 memo.Lat, memo.Long
@@ -172,21 +170,26 @@ class GPS : AppCompatActivity(), LocationListener,OnMapReadyCallback {
                 .zoom(16f)
                 .target(place)
                 .build()
+            map?.isMyLocationEnabled = true
             map?.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+
         }
         val realmData = realm.where(Memo::class.java).findAll()
 
         for (memo: Memo in realmData) {
-
-
             if (memo != null) {
             }
             val place = LatLng(
                 memo.Lat, memo.Long
             )
-
+            map?.isMyLocationEnabled = true
             map?.addMarker(MarkerOptions().position(place).title(memo.name))
-
+            map?.setOnMapLongClickListener(GoogleMap.OnMapLongClickListener {
+                val id = intent.getStringExtra("id")
+                if (id != null) {
+                    delete(id)
+                }
+            })
         }
     }
 
