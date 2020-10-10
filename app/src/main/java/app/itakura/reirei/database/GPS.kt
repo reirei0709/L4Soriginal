@@ -185,6 +185,8 @@ class GPS : AppCompatActivity(), LocationListener,OnMapReadyCallback {
             map?.isMyLocationEnabled = true
             map?.addMarker(MarkerOptions().position(place).title(memo.name))
             map?.setOnMapLongClickListener(GoogleMap.OnMapLongClickListener {
+
+                Log.d("maker","OK")
                 val id = intent.getStringExtra("id")
                 if (id != null) {
                     delete(id)
