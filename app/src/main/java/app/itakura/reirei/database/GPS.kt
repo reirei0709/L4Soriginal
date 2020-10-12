@@ -54,6 +54,7 @@ class GPS : AppCompatActivity(), LocationListener,OnMapReadyCallback {
         } else if (intent?.type == "text/plain") {
             // Handle intents with text ...
             val infoText: String = intent.getStringExtra(Intent.EXTRA_TEXT)
+            Log.d("infoText",infoText.toString())
             val infoTextArr = infoText.split("\n")
             // putExtra等々処理を入れる
             MainPage.putExtra("Mode", "0")  // 他アプリから追加
@@ -66,17 +67,6 @@ class GPS : AppCompatActivity(), LocationListener,OnMapReadyCallback {
 
             map?.isMyLocationEnabled = true
 
-
-
-//            // 地点情報獲得
-//            val task = ObtainGeoSpotTask(
-//                applicationContext,
-//                object : OnObtainGeoSpotListener() {
-//                    fun onObtainGeoSpot(geoSpot: GeoSpot?) {}
-//                })
-//            task.execute(intent.getStringExtra(Intent.EXTRA_TEXT))
-
-            //お店の情報の登録画面を呼び出す(追加登録)
             startActivity(MainPage)
 
         }
@@ -107,14 +97,18 @@ class GPS : AppCompatActivity(), LocationListener,OnMapReadyCallback {
         }
         button.setOnClickListener {
 
-            if (mylocation != null) {
-                val MainPage = Intent(this, MainActivity::class.java)
+            val GPSPage = Intent(this, GPS::class.java)
 //
-                MainPage.putExtra("Latitude", mylocation!!.getLatitude())
-                MainPage.putExtra("Longitude", mylocation!!.getLongitude())
+           startActivity(GPSPage)
 
-                startActivity(MainPage)
-            }
+//            if (mylocation != null) {
+//                val MainPage = Intent(this, MainActivity::class.java)
+////
+//                MainPage.putExtra("Latitude", mylocation!!.getLatitude())
+//                MainPage.putExtra("Longitude", mylocation!!.getLongitude())
+//
+//                startActivity(MainPage)
+//            }
 
         }
 
@@ -176,6 +170,8 @@ class GPS : AppCompatActivity(), LocationListener,OnMapReadyCallback {
         }
         val realmData = realm.where(Memo::class.java).findAll()
 
+
+
         for (memo: Memo in realmData) {
             if (memo != null) {
             }
@@ -184,13 +180,14 @@ class GPS : AppCompatActivity(), LocationListener,OnMapReadyCallback {
             )
             map?.isMyLocationEnabled = true
             map?.addMarker(MarkerOptions().position(place).title(memo.name))
-            map?.setOnMapLongClickListener(GoogleMap.OnMapLongClickListener {
 
+
+
+            map?.setOnMapLongClickListener(GoogleMap.OnMapLongClickListener {
                 Log.d("maker","OK")
                 val id = intent.getStringExtra("id")
-                if (id != null) {
-                    delete(id)
-                }
+                delete(memo?.id!!)
+                finish()
             })
         }
     }
@@ -304,9 +301,9 @@ class GPS : AppCompatActivity(), LocationListener,OnMapReadyCallback {
 
     fun delete(id: String) {
         realm.executeTransaction {
-            val task = realm.where(Memo::class.java).equalTo("id", id).findFirst()
+            val memo = realm.where(Memo::class.java).equalTo("id", id).findFirst()
                 ?: return@executeTransaction
-            task.deleteFromRealm()
+            memo.deleteFromRealm()
         }
     }
 

@@ -43,12 +43,15 @@ class MainActivity() : AppCompatActivity(), Parcelable {
 
         saveButton.setOnClickListener {
 
+            val intent = Intent(applicationContext, GPS::class.java)
+            intent.putExtra("id", memo?.id)
+
             intent.putExtra("shopname",titleEditText.text.toString())
             intent.putExtra("memo",detail.text.toString())
             intent.putExtra("url",url.text.toString())
 
 
-            val id:String? = intent.getStringExtra("ID")
+            val id:String? = intent.getStringExtra("id")
             val name: String  = titleEditText.text.toString()
             val memo: String = detail.text.toString()
             val url: String = url.text.toString()
@@ -68,6 +71,8 @@ class MainActivity() : AppCompatActivity(), Parcelable {
             } else if (intentMode == 2){
                 update(id,name,memo,url)
             }
+
+
 
             // 画面を閉じる
             finish()
