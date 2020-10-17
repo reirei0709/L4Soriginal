@@ -14,10 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import app.itakura.reirei.databaserealm.Memo
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
@@ -29,6 +26,7 @@ class GPS : AppCompatActivity(), LocationListener,OnMapReadyCallback {
 
     // lateinit: late initialize to avoid checking null
     private lateinit var locationManager: LocationManager
+
 
     private var map: GoogleMap? = null
 
@@ -45,7 +43,6 @@ class GPS : AppCompatActivity(), LocationListener,OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_g_p_s)
 
-
         val MainPage = Intent(application, MainActivity::class.java)
 
         // Figure out what to do based on the intent type
@@ -60,6 +57,14 @@ class GPS : AppCompatActivity(), LocationListener,OnMapReadyCallback {
             MainPage.putExtra("Mode", "0")  // 他アプリから追加
             MainPage.putExtra("shopname", infoTextArr[0])
             Log.d("shopname",infoTextArr[0])
+
+
+
+            var geocoder = new GClientGeocoder()
+            geocoder.getLatLng(infoTextArr[1], moveTo)
+
+
+
             MainPage.putExtra("memo", infoTextArr[2])
             Log.d("memo",infoTextArr[2])
             MainPage.putExtra("url", infoTextArr[3])
@@ -97,9 +102,7 @@ class GPS : AppCompatActivity(), LocationListener,OnMapReadyCallback {
         }
         button.setOnClickListener {
 
-            val GPSPage = Intent(this, GPS::class.java)
-//
-           startActivity(GPSPage)
+           finish()
 
 //            if (mylocation != null) {
 //                val MainPage = Intent(this, MainActivity::class.java)
@@ -117,6 +120,21 @@ class GPS : AppCompatActivity(), LocationListener,OnMapReadyCallback {
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
     }
+
+    fun moveTo(latlng) {
+        if (latlng){
+            map.setCenter(latlng, 15);
+//            map.clearOverlays();
+            var marker = new GMarker(latlng);
+            map.addOverlay(marker);
+
+        }else{
+            alert("住所から緯度経度に変換できません");
+        }
+    }
+
+
+
 
 
 
@@ -318,6 +336,8 @@ class GPS : AppCompatActivity(), LocationListener,OnMapReadyCallback {
             realm.deleteAll()
         }
     }
+
+
 
 
 
