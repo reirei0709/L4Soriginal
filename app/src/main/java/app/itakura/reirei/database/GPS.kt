@@ -14,7 +14,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import app.itakura.reirei.databaserealm.Memo
-import com.google.android.gms.maps.*
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
@@ -51,12 +54,13 @@ class GPS : AppCompatActivity(), LocationListener,OnMapReadyCallback {
         } else if (intent?.type == "text/plain") {
             // Handle intents with text ...
             val infoText: String = intent.getStringExtra(Intent.EXTRA_TEXT)
-            Log.d("infoText",infoText.toString())
+            Log.d("infoText", infoText.toString())
             val infoTextArr = infoText.split("\n")
             // putExtra等々処理を入れる
             MainPage.putExtra("Mode", "0")  // 他アプリから追加
             MainPage.putExtra("shopname", infoTextArr[0])
-            Log.d("shopname",infoTextArr[0])
+            Log.d("shopname", infoTextArr[0])
+
 
 
 
@@ -66,9 +70,9 @@ class GPS : AppCompatActivity(), LocationListener,OnMapReadyCallback {
 
 
             MainPage.putExtra("memo", infoTextArr[2])
-            Log.d("memo",infoTextArr[2])
+            Log.d("memo", infoTextArr[2])
             MainPage.putExtra("url", infoTextArr[3])
-            Log.d("url",infoTextArr[3])
+            Log.d("url", infoTextArr[3])
 
             map?.isMyLocationEnabled = true
 
@@ -122,14 +126,15 @@ class GPS : AppCompatActivity(), LocationListener,OnMapReadyCallback {
     }
 
     fun moveTo(latlng) {
-        if (latlng){
-            map.setCenter(latlng, 15);
-//            map.clearOverlays();
-            var marker = new GMarker(latlng);
-            map.addOverlay(marker);
+        val memo: Memo? = read()
 
-        }else{
-            alert("住所から緯度経度に変換できません");
+        if (latlng){
+            //map.setCenter(latlng, 15);
+//            map.clearOverlays();
+            map?.addMarker(MarkerOptions().position(latlng).title(memo?.name))
+
+//        }else{
+//            alert("住所から緯度経度に変換できません");
         }
     }
 
@@ -202,7 +207,7 @@ class GPS : AppCompatActivity(), LocationListener,OnMapReadyCallback {
 
 
             map?.setOnMapLongClickListener(GoogleMap.OnMapLongClickListener {
-                Log.d("maker","OK")
+                Log.d("maker", "OK")
                 val id = intent.getStringExtra("id")
                 delete(memo?.id!!)
                 finish()
