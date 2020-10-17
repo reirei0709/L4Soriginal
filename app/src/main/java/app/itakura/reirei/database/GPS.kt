@@ -62,8 +62,6 @@ class GPS : AppCompatActivity(), LocationListener,OnMapReadyCallback {
             Log.d("shopname", infoTextArr[0])
 
 
-
-
             var geocoder = new GClientGeocoder()
             geocoder.getLatLng(infoTextArr[1], moveTo)
 
