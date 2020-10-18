@@ -23,6 +23,11 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_g_p_s.*
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.net.URL
+import org.json.JSONObject
+
 
 
 class GPS : AppCompatActivity(), LocationListener,OnMapReadyCallback {
@@ -62,8 +67,6 @@ class GPS : AppCompatActivity(), LocationListener,OnMapReadyCallback {
             Log.d("shopname", infoTextArr[0])
 
 
-            var geocoder = new GClientGeocoder()
-            geocoder.getLatLng(infoTextArr[1], moveTo)
 
 
 
@@ -122,24 +125,6 @@ class GPS : AppCompatActivity(), LocationListener,OnMapReadyCallback {
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
     }
-
-    fun moveTo(latlng) {
-        val memo: Memo? = read()
-
-        if (latlng){
-            //map.setCenter(latlng, 15);
-//            map.clearOverlays();
-            map?.addMarker(MarkerOptions().position(latlng).title(memo?.name))
-
-//        }else{
-//            alert("住所から緯度経度に変換できません");
-        }
-    }
-
-
-
-
-
 
 
     override fun onMapReady(googleMap: GoogleMap?) {
@@ -338,6 +323,29 @@ class GPS : AppCompatActivity(), LocationListener,OnMapReadyCallback {
         realm.executeTransaction {
             realm.deleteAll()
         }
+    }
+
+    fun main(args: Array<String>) {
+
+        //APIキー
+        val API_KEY = "https://map.yahooapis.jp/geocode/V1/geoCoder?appid=<esdcb60728>&query=%e6%9d%b1%e4%ba%ac%e9%83%bd%e6%b8%af%e5%8c%ba%e5%85%ad%e6%9c%ac%e6%9c%a8"
+        //都市のID(横浜)
+        val CITY_ID = 1848354
+        //アクセスする際のURL
+        val API_URL = "http://api.openweathermap.org/data/2.5/forecast?" +
+                "id=" + CITY_ID + "&" +
+                "APPID=" + API_KEY
+        var url = URL(API_URL)
+
+        //APIから情報を取得する.
+        var br = BufferedReader(InputStreamReader(url.openStream()))
+
+        //json形式のデータとして識別
+        var json = JSONObject(br)
+
+        //cityのキーに対応するvalueを表示する．
+        println(json.get("city"))
+
     }
 
 
